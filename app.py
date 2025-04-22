@@ -11,11 +11,8 @@ svr_lin_model = joblib.load('svr_lin_model.pkl')
 st.title("Customer Lifetime Value (LTV) Prediction App")
 st.write("Enter the customer details below to predict their LTV:")
 
-# Input fields for exactly 27 features
-customer_id = st.text_input("Customer ID")
+# Input fields matching the model features
 age = st.number_input("Age", min_value=18, max_value=100, value=30)
-location = st.text_input("Location")
-income_level = st.selectbox("Income Level", ["Low", "Medium", "High"])
 total_transactions = st.number_input("Total Transactions", min_value=0, value=5)
 avg_transaction_value = st.number_input("Average Transaction Value", min_value=0.0, value=100.0)
 max_transaction_value = st.number_input("Max Transaction Value", min_value=0.0, value=200.0)
@@ -26,30 +23,45 @@ last_transaction_days_ago = st.number_input("Last Transaction Days Ago", min_val
 loyalty_points_earned = st.number_input("Loyalty Points Earned", min_value=0, value=200)
 referral_count = st.number_input("Referral Count", min_value=0, value=2)
 cashback_received = st.number_input("Cashback Received", min_value=0.0, value=50.0)
-app_usage_frequency = st.number_input("App Usage Frequency (per week)", min_value=0, value=5)
-preferred_payment_method = st.selectbox("Preferred Payment Method", ["Credit Card", "Debit Card", "Net Banking", "UPI", "Wallet"])
 support_tickets_raised = st.number_input("Support Tickets Raised", min_value=0, value=1)
 issue_resolution_time = st.number_input("Issue Resolution Time (hours)", min_value=0.0, value=5.0)
 customer_satisfaction_score = st.slider("Customer Satisfaction Score", 0.0, 10.0, 7.5)
-avg_session_duration = st.number_input("Average Session Duration (mins)", min_value=0.0, value=15.0)
-times_logged_in_last_month = st.number_input("Times Logged In Last Month", min_value=0, value=12)
-promotions_availed = st.number_input("Promotions Availed", min_value=0, value=3)
-returns_made = st.number_input("Returns Made", min_value=0, value=1)
-fraud_alerts = st.number_input("Fraud Alerts Triggered", min_value=0, value=0)
-review_count = st.number_input("Review Count Submitted", min_value=0, value=2)
-subscription_plan = st.selectbox("Subscription Plan", ["Free", "Basic", "Premium"])
-feedback_score = st.slider("Feedback Score", 0.0, 5.0, 4.0)
+
+location = st.selectbox("Location", ["Rural", "Suburban", "Urban"])
+income_level = st.selectbox("Income Level", ["Low", "Middle", "High"])
+app_usage_frequency = st.selectbox("App Usage Frequency", ["Daily", "Weekly", "Monthly"])
+preferred_payment_method = st.selectbox("Preferred Payment Method", ["Credit Card", "Debit Card", "UPI", "Wallet Balance"])
 
 # Model selection
 model_choice = st.selectbox("Choose the Model", ["Linear Regression", "Gradient Boosting", "SVR Linear"])
 
 # Prediction button
 if st.button("Predict LTV"):
+    # One-hot encoding for categorical features
+    location_encoded = [
+        1 if location == "Rural" else 0,
+        1 if location == "Suburban" else 0,
+        1 if location == "Urban" else 0
+    ]
+    income_encoded = [
+        1 if income_level == "High" else 0,
+        1 if income_level == "Low" else 0,
+        1 if income_level == "Middle" else 0
+    ]
+    usage_encoded = [
+        1 if app_usage_frequency == "Daily" else 0,
+        1 if app_usage_frequency == "Weekly" else 0,
+        1 if app_usage_frequency == "Monthly" else 0
+    ]
+    payment_encoded = [
+        1 if preferred_payment_method == "Credit Card" else 0,
+        1 if preferred_payment_method == "Debit Card" else 0,
+        1 if preferred_payment_method == "UPI" else 0,
+        1 if preferred_payment_method == "Wallet Balance" else 0
+    ]
+
     input_data = np.array([[
-        hash(customer_id) % 100000,
         age,
-        hash(location) % 1000,
-        {"Low": 0, "Medium": 1, "High": 2}[income_level],
         total_transactions,
         avg_transaction_value,
         max_transaction_value,
@@ -60,20 +72,10 @@ if st.button("Predict LTV"):
         loyalty_points_earned,
         referral_count,
         cashback_received,
-        app_usage_frequency,
-        {"Credit Card": 0, "Debit Card": 1, "Net Banking": 2, "UPI": 3, "Wallet": 4}[preferred_payment_method],
         support_tickets_raised,
         issue_resolution_time,
-        customer_satisfaction_score,
-        avg_session_duration,
-        times_logged_in_last_month,
-        promotions_availed,
-        returns_made,
-        fraud_alerts,
-        review_count,
-        {"Free": 0, "Basic": 1, "Premium": 2}[subscription_plan],
-        feedback_score
-    ]])
+        customer_satisfaction_score
+    ] + location_encoded + income_encoded + usage_encoded + payment_encoded])
 
     if model_choice == "Linear Regression":
         prediction = lr_model.predict(input_data)[0]
