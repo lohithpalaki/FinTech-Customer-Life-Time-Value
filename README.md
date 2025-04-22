@@ -1,1 +1,1 @@
-# FinTech-Customer-Life-Time-Value-LTV-
+# FinTech-Customer-Life-Time-Value
