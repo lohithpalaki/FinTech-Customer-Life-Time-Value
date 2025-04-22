@@ -39,7 +39,6 @@ fraud_alerts = st.number_input("Fraud Alerts Triggered", min_value=0, value=0)
 review_count = st.number_input("Review Count Submitted", min_value=0, value=2)
 subscription_plan = st.selectbox("Subscription Plan", ["Free", "Basic", "Premium"])
 feedback_score = st.slider("Feedback Score", 0.0, 5.0, 4.0)
-marketing_engagement_score = st.slider("Marketing Engagement Score", 0.0, 10.0, 6.0)  # 27th feature
 
 # Model selection
 model_choice = st.selectbox("Choose the Model", ["Linear Regression", "Gradient Boosting", "SVR Linear"])
@@ -73,8 +72,7 @@ if st.button("Predict LTV"):
         fraud_alerts,
         review_count,
         {"Free": 0, "Basic": 1, "Premium": 2}[subscription_plan],
-        feedback_score,
-        marketing_engagement_score
+        feedback_score
     ]])
 
     if model_choice == "Linear Regression":
