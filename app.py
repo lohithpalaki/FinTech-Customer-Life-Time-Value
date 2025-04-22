@@ -77,4 +77,11 @@ if st.button("Predict LTV"):
         marketing_engagement_score
     ]])
 
-    if model_choice ==
+    if model_choice == "Linear Regression":
+        prediction = lr_model.predict(input_data)[0]
+    elif model_choice == "Gradient Boosting":
+        prediction = gbr_model.predict(input_data)[0]
+    else:
+        prediction = svr_lin_model.predict(input_data)[0]
+
+    st.success(f"Predicted Customer LTV: ₹{prediction:,.2f}")
