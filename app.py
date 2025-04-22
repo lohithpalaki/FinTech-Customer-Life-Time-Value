@@ -11,7 +11,7 @@ svr_lin_model = joblib.load('svr_lin_model.pkl')
 st.title("Customer Lifetime Value (LTV) Prediction App")
 st.write("Enter the customer details below to predict their LTV:")
 
-# Input fields for all 27 features
+# Input fields for exactly 27 features
 customer_id = st.text_input("Customer ID")
 age = st.number_input("Age", min_value=18, max_value=100, value=30)
 location = st.text_input("Location")
@@ -31,14 +31,15 @@ preferred_payment_method = st.selectbox("Preferred Payment Method", ["Credit Car
 support_tickets_raised = st.number_input("Support Tickets Raised", min_value=0, value=1)
 issue_resolution_time = st.number_input("Issue Resolution Time (hours)", min_value=0.0, value=5.0)
 customer_satisfaction_score = st.slider("Customer Satisfaction Score", 0.0, 10.0, 7.5)
-
-# Additional fields to complete 27 features
 avg_session_duration = st.number_input("Average Session Duration (mins)", min_value=0.0, value=15.0)
 times_logged_in_last_month = st.number_input("Times Logged In Last Month", min_value=0, value=12)
 promotions_availed = st.number_input("Promotions Availed", min_value=0, value=3)
 returns_made = st.number_input("Returns Made", min_value=0, value=1)
 fraud_alerts = st.number_input("Fraud Alerts Triggered", min_value=0, value=0)
 review_count = st.number_input("Review Count Submitted", min_value=0, value=2)
+subscription_plan = st.selectbox("Subscription Plan", ["Free", "Basic", "Premium"])
+feedback_score = st.slider("Feedback Score", 0.0, 5.0, 4.0)
+marketing_engagement_score = st.slider("Marketing Engagement Score", 0.0, 10.0, 6.0)  # 27th feature
 
 # Model selection
 model_choice = st.selectbox("Choose the Model", ["Linear Regression", "Gradient Boosting", "SVR Linear"])
@@ -46,9 +47,9 @@ model_choice = st.selectbox("Choose the Model", ["Linear Regression", "Gradient 
 # Prediction button
 if st.button("Predict LTV"):
     input_data = np.array([[
-        hash(customer_id) % 100000,  # Encode Customer ID
+        hash(customer_id) % 100000,
         age,
-        hash(location) % 1000,  # Encode Location
+        hash(location) % 1000,
         {"Low": 0, "Medium": 1, "High": 2}[income_level],
         total_transactions,
         avg_transaction_value,
@@ -70,14 +71,10 @@ if st.button("Predict LTV"):
         promotions_availed,
         returns_made,
         fraud_alerts,
-        review_count
+        review_count,
+        {"Free": 0, "Basic": 1, "Premium": 2}[subscription_plan],
+        feedback_score,
+        marketing_engagement_score
     ]])
 
-    if model_choice == "Linear Regression":
-        prediction = lr_model.predict(input_data)[0]
-    elif model_choice == "Gradient Boosting":
-        prediction = gbr_model.predict(input_data)[0]
-    else:
-        prediction = svr_lin_model.predict(input_data)[0]
-
-    st.success(f"Predicted Customer LTV: ₹{prediction:,.2f}")
+    if model_choice ==
