@@ -1,43 +1,23 @@
-
 import streamlit as st
 import joblib
 import numpy as np
-import pandas as pd
 
-# Title
-st.title("Customer Lifetime Value (LTV) Predictor")
-st.write("Fill in the details to predict customer LTV")
+st.title("Simple LTV Predictor")
 
-# Input fields
-age = st.number_input("Age", min_value=18, max_value=100, value=30)
-total_transactions = st.number_input("Total Transactions", min_value=0, value=10)
-avg_transaction_value = st.number_input("Average Transaction Value", min_value=0.0, value=150.0)
-app_usage_frequency = st.selectbox("App Usage Frequency", ["Daily", "Weekly", "Monthly"])
+total_spent = st.number_input("Total Spent", 0.0, 100000.0, 5000.0)
+loyalty_points_earned = st.number_input("Loyalty Points Earned", 0, 10000, 250)
+referral_count = st.number_input("Referral Count", 0, 100, 5)
+cashback_received = st.number_input("Cashback Received", 0.0, 10000.0, 300.0)
 customer_satisfaction_score = st.slider("Customer Satisfaction Score", 0.0, 10.0, 7.5)
 
-# Model selection
-model_choice = st.selectbox("Choose the Model", ["Linear Regression", "Gradient Boosting", "SVR"])
-
-# Mapping categorical variable
-usage_encoded = [
-    1 if app_usage_frequency == "Daily" else 0,
-    1 if app_usage_frequency == "Weekly" else 0,
-    1 if app_usage_frequency == "Monthly" else 0
-]
-
-# Prediction
-if st.button("Predict LTV"):
-    input_array = np.array([[
-        age, total_transactions, avg_transaction_value,
+if st.button("Predict"):
+    model = joblib.load("lr_model.pkl")
+    input_data = np.array([[
+        total_spent,
+        loyalty_points_earned,
+        referral_count,
+        cashback_received,
         customer_satisfaction_score
-    ] + usage_encoded])
-
-    model_file = {
-        "Linear Regression": "lr_model.pkl",
-        "Gradient Boosting": "gbr_model.pkl",
-        "SVR": "svr_lin_model.pkl"
-    }[model_choice]
-
-    model = joblib.load(model_file)
-    prediction = model.predict(input_array)[0]
-    st.success(f"Predicted Customer LTV: ₹{prediction:,.2f}")
+    ]])
+    prediction = model.predict(input_data)[0]
+    st.success(f"Predicted LTV: ₹{prediction:,.2f}")
