@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 
 # Dummy credentials for login
-auth_users = {"admin": "password123"}
+auth_users = {"Customer_LTV": "Fintech"}
 
 # Session state to manage login
 if "logged_in" not in st.session_state:
