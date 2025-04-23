@@ -9,9 +9,19 @@ auth_users = {"Customer_LTV": "Fintech"}
 # Session state to manage login
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
+if "page" not in st.session_state:
+    st.session_state.page = "Login"
 
-# Sidebar navigation
-page = st.sidebar.selectbox("Navigation", ["Login", "Predict One", "Predict from CSV"])
+# Sidebar navigation and logout
+if st.session_state.logged_in:
+    st.sidebar.title("Navigation")
+    st.session_state.page = st.sidebar.selectbox("Go to", ["Predict One", "Predict from CSV"], index=["Predict One", "Predict from CSV"].index(st.session_state.page) if st.session_state.page in ["Predict One", "Predict from CSV"] else 0)
+    if st.sidebar.button("Logout"):
+        st.session_state.logged_in = False
+        st.session_state.page = "Login"
+        st.experimental_rerun()
+else:
+    st.session_state.page = "Login"
 
 # Page 1: Login
 def login_page():
@@ -21,22 +31,19 @@ def login_page():
     if st.button("Login"):
         if username in auth_users and auth_users[username] == password:
             st.session_state.logged_in = True
-            st.success("Login successful! Use the sidebar to navigate.")
+            st.session_state.page = "Predict One"
+            st.success("Login successful! Redirecting to prediction page...")
         else:
             st.error("Invalid credentials")
 
 # Page 2: Single Prediction
 def single_prediction_page():
-    if not st.session_state.logged_in:
-        st.warning("Please log in to access this page.")
-        return
+    st.title("Predict LTV Manually")
 
-    st.title("Simple LTV Predictor")
-
-    total_spent = st.number_input("Total Spent", 0.0, 10000000.0, 5000.0)
-    loyalty_points_earned = st.number_input("Loyalty Points Earned", 0, 10000, 250)
-    referral_count = st.number_input("Referral Count", 0, 100, 5)
-    cashback_received = st.number_input("Cashback Received", 0.0, 10000.0, 300.0)
+    total_spent = st.number_input("Total Spent", 0.0, 1000000000.0, 5000.0)
+    loyalty_points_earned = st.number_input("Loyalty Points Earned", 0, 100000, 250)
+    referral_count = st.number_input("Referral Count", 0, 1000, 5)
+    cashback_received = st.number_input("Cashback Received", 0.0, 100000.0, 300.0)
     customer_satisfaction_score = st.slider("Customer Satisfaction Score", 0.0, 10.0, 7.5)
 
     if st.button("Predict"):
@@ -53,10 +60,6 @@ def single_prediction_page():
 
 # Page 3: Batch Prediction
 def batch_prediction_page():
-    if not st.session_state.logged_in:
-        st.warning("Please log in to access this page.")
-        return
-
     st.title("📂 Predict LTV from CSV")
     uploaded_file = st.file_uploader("Upload CSV", type=["csv"])
     if uploaded_file is not None:
@@ -76,9 +79,9 @@ def batch_prediction_page():
             st.error(f"CSV must contain columns: {', '.join(required_cols)}")
 
 # Router
-if page == "Login":
+if st.session_state.page == "Login":
     login_page()
-elif page == "Predict One":
+elif st.session_state.page == "Predict One":
     single_prediction_page()
-elif page == "Predict from CSV":
+elif st.session_state.page == "Predict from CSV":
     batch_prediction_page()
