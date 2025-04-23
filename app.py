@@ -28,8 +28,8 @@ issue_resolution_time = st.number_input("Issue Resolution Time (hours)", min_val
 customer_satisfaction_score = st.slider("Customer Satisfaction Score", 0.0, 10.0, 7.5)
 
 location = st.selectbox("Location", ["Rural", "Suburban", "Urban"])
-income_level = st.selectbox("Income Level", ["Low", "Middle", "High"])
-app_usage_frequency = st.selectbox("App Usage Frequency", ["Daily", "Weekly", "Monthly"])
+income_level = st.selectbox("Income Level", ["High", "Low", "Middle"])
+app_usage_frequency = st.selectbox("App Usage Frequency", ["Daily", "Monthly", "Weekly"])
 preferred_payment_method = st.selectbox("Preferred Payment Method", ["Credit Card", "Debit Card", "UPI", "Wallet Balance"])
 
 # Model selection
@@ -37,7 +37,7 @@ model_choice = st.selectbox("Choose the Model", ["Linear Regression", "Gradient 
 
 # Prediction button
 if st.button("Predict LTV"):
-    # One-hot encoding for categorical features
+    # One-hot encoding for categorical features in correct order
     location_encoded = [
         1 if location == "Rural" else 0,
         1 if location == "Suburban" else 0,
@@ -50,8 +50,8 @@ if st.button("Predict LTV"):
     ]
     usage_encoded = [
         1 if app_usage_frequency == "Daily" else 0,
-        1 if app_usage_frequency == "Weekly" else 0,
-        1 if app_usage_frequency == "Monthly" else 0
+        1 if app_usage_frequency == "Monthly" else 0,
+        1 if app_usage_frequency == "Weekly" else 0
     ]
     payment_encoded = [
         1 if preferred_payment_method == "Credit Card" else 0,
