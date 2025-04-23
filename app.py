@@ -61,20 +61,9 @@ if st.button("Predict LTV"):
     ]
 
     input_data = np.array([[
-        age,
-        total_transactions,
-        avg_transaction_value,
-        max_transaction_value,
-        min_transaction_value,
-        total_spent,
-        active_days,
-        last_transaction_days_ago,
-        loyalty_points_earned,
-        referral_count,
-        cashback_received,
-        support_tickets_raised,
-        issue_resolution_time,
-        customer_satisfaction_score
+        age, total_transactions, avg_transaction_value, max_transaction_value, min_transaction_value,
+        total_spent, active_days, last_transaction_days_ago, loyalty_points_earned, referral_count,
+        cashback_received, support_tickets_raised, issue_resolution_time, customer_satisfaction_score
     ] + location_encoded + income_encoded + usage_encoded + payment_encoded])
 
     if model_choice == "Linear Regression":
